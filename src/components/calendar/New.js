@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import axios from 'axios';
 import '@mobiscroll/react/dist/css/mobiscroll.min.css';
 import { Eventcalendar, Button, Select, Page, getJson, formatDate, confirm, toast, setOptions } from '@mobiscroll/react';
+import { makeTimes } from './MilesJS';
 
 setOptions({
     theme: 'ios',
@@ -121,8 +122,6 @@ function New({ date, user, apptLength }) {
             "DateStart": mySelectedEvents[0].DateStart,
             "DateEnd": mySelectedEvents[0].DateEnd
         }
-        console.log(mySelectedEvents.DateStart)
-        console.log(mySelectedEvents.DateEnd)
         try {
             const resp = await axios.post(url2, body, {
                 headers: {
@@ -154,13 +153,14 @@ function New({ date, user, apptLength }) {
             .then(response => {
                 setMyEvents(response.data.Result)
                 const filteredCopy = (response.data.Result.filter(d => parseInt(d.Appointment_Length) === apptLength))
-                    filteredCopy.map(e => {
-                                    e.start = e.DateStart
-                                    e.end = e.DateEnd
-                                    e.title = e.Title
-                                    return e
-                    })
-                setFilteredEvents(filteredCopy)
+                let times = makeTimes(date, apptLength, filteredCopy)
+                    // times.map(e => {
+                    //                 e.start = e.DateStart
+                    //                 e.end = e.DateEnd
+                    //                 e.title = e.Title
+                    //                 return e
+                    // })
+                setFilteredEvents(times)
                 // const filteredCopy = {...myEvents}
                 // filteredCopy.map(e => {
                 //     e.start = e.DateStart
@@ -335,13 +335,19 @@ function New({ date, user, apptLength }) {
 
     React.useEffect(() => {
             const filteredCopy = myEvents.filter(d => parseInt(d.Appointment_Length) === apptLength)
-                filteredCopy.map(e => {
-                    e.start = e.DateStart
-                    e.end = e.DateEnd
-                    e.title = e.Title
-                    return e
-                })
-                setFilteredEvents(filteredCopy)
+            let times = makeTimes(date, apptLength, filteredCopy)
+                // times.map(e => {
+                //     e.start = e.DateStart
+                //     e.end = e.DateEnd
+                //     e.title = e.Title
+                //     return e
+                // })
+                // console.log(filteredCopy[0]["DateStart"])
+                // console.log(filteredCopy[0]["DateEnd"])
+                console.log(filteredCopy.length)
+                console.log(date)
+                console.log(apptLength)
+                setFilteredEvents(times)
 
 
         // fetch(`http://localhost:8000/appointments`, {
